@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+/* Standard document styles for exact replication */
+.doc-container {
+    width: 100%;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+#form-card-a {
+    max-width: 850px;
+}
+
+#form-card-b {
+    max-width: 850px;
+    transition: max-width 0.4s ease-in-out;
+}
+
+/* Form Table Borders & Inputs styling */
+.form-table {
+    border: 2px solid #000000;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.form-cell {
+    border: 1px solid #1e293b;
+    padding: 6px 10px;
+    vertical-align: top;
+    transition: background-color 0.15s ease;
+}
+
+.form-cell:focus-within {
+    background-color: #fef08a;
+    /* Soft yellow highlight on edit */
+}
+
+/* Compact padding for Form B columns to fit page height */
+.type-b-active .form-cell {
+    padding: 4px 8px;
+}
+
+/* Seamless borderless inputs that print beautifully */
+.form-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+    padding: 2px 0;
+}
+
+.type-b-active .form-input {
+    font-size: 12px;
+}
+
+.form-input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+    text-transform: none;
+}
+
+/* Prevent header inputs from overflowing the white card on any viewport */
+.doc-container input {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Column Card styles for Form B */
+.column-card {
+    flex: 1 1 33.33%;
+    width: 33.33%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 10px;
+    border-radius: 6px;
+    opacity: 1;
+    transform: scale(1);
+    overflow: hidden;
+}
+
+.column-card.active-col {
+    border: 2.5px solid #4f46e5 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.12);
+}
+
+.column-card.inactive-col {
+    opacity: 0.45;
+    filter: grayscale(15%);
+    background-color: #f8fafc !important;
+}
+
+.column-card.default-col {
+    opacity: 1.0;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+}
+
+/* Collapsed Column State (slides out and closes) */
+.column-card.collapsed {
+    flex: 0 0 0% !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    transform: scale(0.9) translateX(-40px);
+    pointer-events: none;
+    overflow: hidden;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#col-3.column-card.collapsed {
+    transform: scale(0.9) translateX(40px);
+}
+
+/* Expanded Column State (slides to center and expands) */
+.column-card.expanded {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 750px !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    pointer-events: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+#columns-wrapper {
+    transition: gap 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#columns-wrapper.single-active {
+    gap: 0 !important;
+}
+
+/* Lock overlay style for columns wrapper */
+#columns-container-wrapper {
+    position: relative;
+}
+
+/* Large label ovals for OR/AND */
+.oval-label {
+    background-color: #1e1b4b;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    border: 1.5px solid #3730a3;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-block;
+}
+
+/* Editable Label micro-interactions */
+[contenteditable="true"] {
+    outline: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+[contenteditable="true"]:hover {
+    background-color: #fef08a !important;
+    color: #000000 !important;
+    cursor: text;
+}
+
+[contenteditable="true"]:focus {
+    background-color: #fef08a !important;
+    color: #000000 !important;
+    box-shadow: 0 0 0 2px #facc15;
+}
+
+/* Controls Panel responsive transition styling */
+#controls-panel {
+    transition: max-width 0.3s ease-in-out;
+}
+
+/* Print media configurations to hide web-only controls */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .doc-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Ensure background colors on section header bars render when printing */
+    .section-header-bar {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Form A & B section headers — keep light gray in print */
+    #form-card-a .section-header-bar,
+    #form-card-b .section-header-bar {
+        background-color: #e2e8f0 !important;
+        color: #000000 !important;
+    }
+
+    .form-cell:focus-within {
+        background-color: transparent !important;
+    }
+
+    body.type-b-active {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Override collapsed/expanded states for side-by-side landscape print layout */
+    .column-card.collapsed {
+        flex: 1 1 33.33% !important;
+        width: 33.33% !important;
+        height: auto !important;
+        max-height: none !important;
+        padding: 10px !important;
+        margin: 0 !important;
+        opacity: 1.0 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        overflow: visible !important;
+        border: 1px solid #000000 !important;
+        display: flex !important;
+    }
+
+    /* In single-column (portrait) mode, keep collapsed columns hidden in print too */
+    #form-card-b.single-col-mode .column-card.collapsed {
+        display: none !important;
+    }
+
+    .column-card.expanded {
+        flex: 1 1 33.33% !important;
+        width: 33.33% !important;
+        max-width: none !important;
+        opacity: 1.0 !important;
+        transform: none !important;
+        border: 1px solid #000000 !important;
+        margin: 0 !important;
+    }
+    
+    #columns-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 20px !important;
+        opacity: 1.0 !important;
+        filter: none !important;
+    }
+
+    .column-card.inactive-col input {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+
+    .column-card.inactive-col input::placeholder {
+        color: transparent !important;
+    }
+
+    .column-card.active-col {
+        border: 1px solid #000000 !important;
+        box-shadow: none !important;
+    }
+
+    .column-card.inactive-col {
+        opacity: 1.0 !important;
+        filter: none !important;
+        background-color: #ffffff !important;
+        border: 1px solid #000000 !important;
+        pointer-events: auto !important;
+    }
+
+    .column-card.default-col {
+        border: 1px solid #000000 !important;
+    }
+
+    .oval-label {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        forced-color-adjust: none !important;
+        /* Reliable print: border outline + dark text (no background reliance) */
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border: 2px solid #000000 !important;
+        border-radius: 9999px !important;
+        padding: 3px 14px !important;
+        display: inline-block !important;
+        font-weight: 800 !important;
+        font-size: 9px !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    /* Only clear background on inline/text contenteditable elements (spans, labels).
+       Block-level div headers keep their dark backgrounds for correct printing. */
+    span[contenteditable="true"],
+    label[contenteditable="true"] {
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Ensure Form B block-level editable headers print with exact background colors */
+    #form-card-b div[contenteditable="true"] {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        forced-color-adjust: none !important;
+    }
+}
+
+/* Horizontal bounce animation for mobile scroll hint */
+@keyframes bounceHorizontal {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-4px); }
+}
+.animate-bounce-horizontal {
+    animation: bounceHorizontal 1.5s infinite ease-in-out;
+}
