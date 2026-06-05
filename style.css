@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 body {
@@ -345,3 +346,27 @@ body {
 .animate-bounce-horizontal {
     animation: bounceHorizontal 1.5s infinite ease-in-out;
 }
+
+/* Custom clean scrollbar for horizontal form container when Scale to Fit is off */
+.no-scrollbar::-webkit-scrollbar {
+    height: 6px;
+}
+.no-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 3px;
+}
+.no-scrollbar::-webkit-scrollbar-thumb {
+    background: #4f46e5;
+    border-radius: 3px;
+    transition: background 0.15s ease;
+}
+.no-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+}
+
+/* Enable smooth transitions for scaled doc-containers */
+.doc-container {
+    transform-origin: top center;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), zoom 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+

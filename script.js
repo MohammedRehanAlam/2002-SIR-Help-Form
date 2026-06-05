@@ -1,5 +1,6 @@
 // ─── Form Selection & Variables ──────────────────────────────────────────
 let currentFormType = 'A';
+let isScaleFitEnabled = false; // Enabled by default for mobile viewports
 
 // ─── Smart Input Formatters ───────────────────────────────────────────────
 
@@ -250,6 +251,20 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // Initialize scale fit button visual state
+    const scaleBtn = document.getElementById('btn-scale-fit');
+    if (scaleBtn) {
+        if (isScaleFitEnabled) {
+            scaleBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 bg-indigo-900/40 border-indigo-700 text-indigo-300 hover:bg-indigo-900/60 shadow";
+        } else {
+            scaleBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white";
+        }
+    }
+
+    // Initial scale check and bind resize listener
+    updateScale();
+    window.addEventListener('resize', updateScale);
 });
 
 // Function to dynamically adjust input width based on text content length
@@ -496,6 +511,7 @@ function setActiveColumnB(activeIndex) {
     } else {
         pageStyle.innerHTML = '@media print { @page { margin: 6mm; } }';
     }
+    updateScale();
 }
 
 // ─── Form Selection & Synchronizations ───────────────────────────────
@@ -573,6 +589,7 @@ function setFormType(type) {
         const el = document.getElementById(id);
         if (el) adjustInputWidth(el);
     });
+    updateScale();
 }
 
 function setCommonB(selector, value) {
@@ -729,6 +746,7 @@ function exportToImage() {
     clone.style.width = cardWidth;
     clone.style.minWidth = cardWidth;
     clone.style.transform = 'none';
+    clone.style.zoom = '1';
     
     // 3. Append clone to body
     document.body.appendChild(clone);
@@ -869,3 +887,88 @@ function showToast(message, icon, colorClass) {
         toast.classList.add('translate-y-20', 'opacity-0');
     }, 4000);
 }
+
+// Toggle scale fit state
+function toggleScaleFit() {
+    isScaleFitEnabled = !isScaleFitEnabled;
+    const btn = document.getElementById('btn-scale-fit');
+    if (btn) {
+        if (isScaleFitEnabled) {
+            btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 bg-indigo-900/40 border-indigo-700 text-indigo-300 hover:bg-indigo-900/60 shadow";
+            showToast('Scale to Fit enabled!', '✓', 'text-indigo-400');
+        } else {
+            btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white";
+            showToast('Scale to Fit disabled. Scroll horizontally.', 'ℹ', 'text-slate-400');
+        }
+    }
+    updateScale();
+}
+
+// Calculate scale factor and apply it to the active form card
+function updateScale() {
+    const cardA = document.getElementById('form-card-a');
+    const cardB = document.getElementById('form-card-b');
+    const swipeHint = document.getElementById('swipe-hint');
+    
+    if (!cardA || !cardB) return;
+    
+    const viewportWidth = window.innerWidth;
+    const padding = 24; // 12px each side on mobile
+    const availableWidth = viewportWidth - padding;
+    const targetWidth = 850;
+    
+    const activeCard = currentFormType === 'A' ? cardA : cardB;
+    const inactiveCard = currentFormType === 'A' ? cardB : cardA;
+    
+    // Always reset the inactive card's zoom/transform to avoid layout bugs when switching form types
+    inactiveCard.style.zoom = '1';
+    inactiveCard.style.transform = 'none';
+    if (inactiveCard.parentElement) {
+        inactiveCard.parentElement.style.height = 'auto';
+    }
+    
+    if (isScaleFitEnabled && availableWidth < targetWidth) {
+        const scale = availableWidth / targetWidth;
+        
+        // Hide swipe hint since card fits screen
+        if (swipeHint) {
+            swipeHint.classList.add('hidden');
+        }
+        
+        if ('zoom' in document.body.style) {
+            activeCard.style.zoom = scale;
+            activeCard.style.transform = 'none';
+            if (activeCard.parentElement) {
+                activeCard.parentElement.style.height = 'auto';
+            }
+        } else {
+            // Firefox fallback using transform scale
+            activeCard.style.transform = `scale(${scale})`;
+            activeCard.style.transformOrigin = 'top center';
+            activeCard.style.zoom = '1';
+            
+            // Adjust wrapper height to prevent empty space (layout collapse)
+            if (activeCard.parentElement) {
+                const cardHeight = activeCard.offsetHeight;
+                activeCard.parentElement.style.height = (cardHeight * scale) + 'px';
+            }
+        }
+    } else {
+        // Reset scale
+        activeCard.style.zoom = '1';
+        activeCard.style.transform = 'none';
+        if (activeCard.parentElement) {
+            activeCard.parentElement.style.height = 'auto';
+        }
+        
+        // Show/hide swipe hint based on overflow
+        if (swipeHint) {
+            if (availableWidth < targetWidth) {
+                swipeHint.classList.remove('hidden');
+            } else {
+                swipeHint.classList.add('hidden');
+            }
+        }
+    }
+}
+
