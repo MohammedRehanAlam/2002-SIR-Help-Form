@@ -47,6 +47,18 @@ function attachFormatter(id, formatterFn) {
 
 // ─── Initialize the page on startup ──────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
+    // Set present date dynamically in DD-MM-YYYY format
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    const currentDateStr = `${dd}-${mm}-${yyyy}`;
+
+    const initialDateA = document.getElementById('camp-date');
+    const initialDateB = document.getElementById('b-camp-date');
+    if (initialDateA) initialDateA.value = currentDateStr;
+    if (initialDateB) initialDateB.value = currentDateStr;
+
     updateFooter();
 
     // Link header values to dynamic footer info
@@ -265,6 +277,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Initial scale check and bind resize listener
     updateScale();
     window.addEventListener('resize', updateScale);
+    window.addEventListener('beforeprint', updateFooter);
 });
 
 // Function to dynamically adjust input width based on text content length
@@ -315,14 +328,28 @@ function adjustInputWidth(input) {
     document.body.removeChild(tempSpan);
 }
 
+function getCurrentTime12Hr() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours}:${minutes} ${ampm}`;
+}
+
 function updateFooter() {
+    const timeStr = getCurrentTime12Hr();
+
     // Form A
     const locA = document.getElementById('camp-location').value;
     const dateA = document.getElementById('camp-date').value;
     const fLeftA = document.getElementById('footer-left');
     const fRightA = document.getElementById('footer-right');
     if (fLeftA) fLeftA.innerText = `SIR 2026 Camp - ${locA}`;
-    if (fRightA) fRightA.innerText = `Printed: ${dateA}`;
+    if (fRightA) {
+        fRightA.innerText = `Printed: ${dateA ? dateA + ' - ' : ''}${timeStr}`;
+    }
 
     // Form B
     const locB = document.getElementById('b-camp-location').value;
@@ -330,7 +357,9 @@ function updateFooter() {
     const fLeftB = document.getElementById('b-footer-left');
     const fRightB = document.getElementById('b-footer-right');
     if (fLeftB) fLeftB.innerText = `${locB}`;
-    if (fRightB) fRightB.innerText = `Printed: ${dateB}`;
+    if (fRightB) {
+        fRightB.innerText = `Printed: ${dateB ? dateB + ' - ' : ''}${timeStr}`;
+    }
 }
 
 // Helper to extract year from various date string formats robustly
@@ -726,6 +755,9 @@ function exportToImage() {
     if (document.activeElement) {
         document.activeElement.blur();
     }
+
+    // Refresh footer to capture the exact current time in the export
+    updateFooter();
 
     const activeFormCard = document.getElementById('form-card-b').classList.contains('hidden')
         ? document.getElementById('form-card-a')
